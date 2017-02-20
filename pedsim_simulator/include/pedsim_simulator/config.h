@@ -117,9 +117,6 @@ public:
     // distribution parameters
     double group_size_lambda;
     double wait_time_beta;
-
-    // simulation visualization mode
-    VisualMode visual_mode;
 };
 
 #endif

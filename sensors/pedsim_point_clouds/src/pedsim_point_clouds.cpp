@@ -65,7 +65,7 @@ public:
     {
         // set up subscribers
         sub_grid_cells_ = nh_.subscribe("/pedsim/static_obstacles", 1, &PedsimCloud::callbackGridCells, this);
-        sub_tracked_persons_ = nh_.subscribe("/pedsim/tracked_persons", 1, &PedsimCloud::callbackTrackedPersons, this);
+        sub_tracked_persons_ = nh_.subscribe("/pedsim/tracked_persons/corrected", 1, &PedsimCloud::callbackTrackedPersons, this);
         sub_robot_odom_ = nh_.subscribe("/pedsim/robot_position", 1, &PedsimCloud::callbackRobotOdom, this);
 
         // set up publishers
@@ -282,7 +282,7 @@ void PedsimCloud::callbackTrackedPersons(const spencer_tracking_msgs::TrackedPer
     std::default_random_engine generator;
     std::uniform_int_distribution<int> int_dist(10, 255);
     std::uniform_real_distribution<float> float_dist(0, 1.8);
-    std::uniform_real_distribution<float> wide_dist(0, 0.24);
+    std::uniform_real_distribution<float> wide_dist(0, 0.20);  //ori 0.24
 
     // Get the positions of people relative to the robot via TF transform
     tf::StampedTransform tfTransform;
@@ -333,7 +333,7 @@ void PedsimCloud::callbackTrackedPersons(const spencer_tracking_msgs::TrackedPer
     if (cloud_local.channels[0].values.size() > 1)
         pub_people_cloud_local_.publish(cloud_local);
 
-    pub_people_cloud_global_.publish(cloud_global);
+    pub_people_cloud_global_.publish(cloud_local);  //<--- 10/7 commented out to test DWA performance
 }
 
 /// -----------------------------------------------------------

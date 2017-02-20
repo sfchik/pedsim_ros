@@ -1,5 +1,5 @@
 /**
-* Copyright 2014-2016 Social Robotics Lab, University of Freiburg
+* Copyright 2014 Social Robotics Lab, University of Freiburg
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
@@ -28,72 +28,71 @@
 * \author Billy Okal <okal@cs.uni-freiburg.de>
 */
 
-#ifndef SIMULATOR_H
-#define SIMULATOR_H
-
 // ros and big guys
-#include <ros/console.h>
 #include <ros/ros.h>
-
-#include <functional>
-#include <memory>
-#include <tf/transform_listener.h>
+#include <ros/console.h>
+#include <std_msgs/String.h>
 
 #include <pedsim_msgs/AgentState.h>
 #include <pedsim_msgs/AllAgentsState.h>
-#include <pedsim_msgs/SocialActivities.h>
-#include <pedsim_msgs/SocialActivity.h>
-#include <pedsim_msgs/TrackedGroup.h>
-#include <pedsim_msgs/TrackedGroups.h>
 #include <pedsim_msgs/TrackedPerson.h>
 #include <pedsim_msgs/TrackedPersons.h>
+#include <pedsim_msgs/TrackedGroup.h>
+#include <pedsim_msgs/TrackedGroups.h>
+#include <pedsim_msgs/SocialActivity.h>
+#include <pedsim_msgs/SocialActivities.h>
 
 // other ROS-sy messages
-#include <animated_marker_msgs/AnimatedMarker.h>
-#include <animated_marker_msgs/AnimatedMarkerArray.h>
-#include <geometry_msgs/Point.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/PoseWithCovariance.h>
-#include <geometry_msgs/TwistWithCovariance.h>
-#include <nav_msgs/GridCells.h>
-#include <nav_msgs/Odometry.h>
-#include <std_msgs/ColorRGBA.h>
-#include <std_msgs/Header.h>
-#include <std_srvs/Empty.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+#include <std_msgs/Header.h>
+#include <std_msgs/ColorRGBA.h>
+#include <std_srvs/Empty.h>
+#include <nav_msgs/GridCells.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/PoseWithCovariance.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/TwistWithCovariance.h>
+#include <animated_marker_msgs/AnimatedMarker.h>
+#include <animated_marker_msgs/AnimatedMarkerArray.h>
 
-#include <pedsim_simulator/agentstatemachine.h>
-#include <pedsim_simulator/agentstatemachine.h>
-#include <pedsim_simulator/config.h>
+#include <boost/foreach.hpp>
+#include <functional>
+
+#include <pedsim_simulator/scene.h>
 #include <pedsim_simulator/element/agent.h>
 #include <pedsim_simulator/element/agentgroup.h>
-#include <pedsim_simulator/element/attractionarea.h>
-#include <pedsim_simulator/element/waitingqueue.h>
-#include <pedsim_simulator/element/waypoint.h>
-#include <pedsim_simulator/orientationhandler.h>
 #include <pedsim_simulator/scenarioreader.h>
-#include <pedsim_simulator/scene.h>
+#include <pedsim_simulator/agentstatemachine.h>
+#include <pedsim_simulator/element/attractionarea.h>
+#include <pedsim_simulator/element/waypoint.h>
+#include <pedsim_simulator/element/waitingqueue.h>
+#include <pedsim_simulator/config.h>
+#include <pedsim_simulator/agentstatemachine.h>
+#include <pedsim_simulator/orientationhandler.h>
 
 #include <dynamic_reconfigure/server.h>
 #include <pedsim_simulator/PedsimSimulatorConfig.h>
 
-using SimConfig = pedsim_simulator::PedsimSimulatorConfig;
+
 
 /// -----------------------------------------------------------------
 /// \class Simulator
 /// \brief Simulation wrapper
 /// \details ROS interface to the scene object provided by pedsim
 /// -----------------------------------------------------------------
-class Simulator {
+class Simulator
+{
 public:
-    explicit Simulator(const ros::NodeHandle& node);
+		Simulator();
+    Simulator(const ros::NodeHandle &node);
     virtual ~Simulator();
 
     bool initializeSimulation();
     void loadConfigParameters();
     void runSimulation();
-    void updateAgentActivities();
+	void updateAgentActivities();
 
     /// publishers
     void publishAgents();
@@ -106,29 +105,49 @@ public:
     void publishRobotPosition();
 
     // callbacks
-    bool onPauseSimulation(std_srvs::Empty::Request& request,
-        std_srvs::Empty::Response& response);
-    bool onUnpauseSimulation(std_srvs::Empty::Request& request,
-        std_srvs::Empty::Response& response);
+    bool onPauseSimulation(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
+    bool onUnpauseSimulation(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
 
     // update robot position based upon data from TF
     void updateRobotPositionFromTF();
 
+		std_msgs::String msg_reset_;  
+		bool reset_;
+		bool once_;
+
+		ros::NodeHandle nh_;
+
 protected:
-    void reconfigureCB(SimConfig& config, uint32_t level);
-    dynamic_reconfigure::Server<SimConfig> server_;
+		void resetCB(const std_msgs::String::ConstPtr& msg);
+
+    void reconfigureCB(pedsim_simulator::PedsimSimulatorConfig& config, uint32_t level);
+    dynamic_reconfigure::Server<pedsim_simulator::PedsimSimulatorConfig>* dsrv_;
 
 private:
-    ros::NodeHandle nh_;
-    bool paused_; // simulation state
+
+    // robot agent
+    Agent *robot_;
+
+    tf::StampedTransform last_robot_pose_; // pose of robot in previous timestep
+    geometry_msgs::Quaternion last_robot_orientation_;  // only updated while robot is moving
+
+    //ros::NodeHandle nh_; temporary switch to public
+
+    // simulation state
+    bool paused_;
 
     /// publishers
     // - data messages
-    ros::Publisher pub_obstacles_; // grid cells
-    ros::Publisher pub_all_agents_; // positions and velocities (old msg)
-    ros::Publisher pub_tracked_persons_; // in spencer format
+    ros::Publisher pub_obstacles_; 			// grid cells
+    ros::Publisher pub_all_agents_;			// positions and velocities (old msg)
+    ros::Publisher pub_tracked_persons_;	// in spencer format
     ros::Publisher pub_tracked_groups_;
     ros::Publisher pub_social_activities_;
+
+    // provided services
+    ros::ServiceServer srv_pause_simulation_;
+    ros::ServiceServer srv_unpause_simulation_;
+
     // - visualization related messages (e.g. markers)
     ros::Publisher pub_attractions_;
     ros::Publisher pub_agent_visuals_;
@@ -139,23 +158,95 @@ private:
     ros::Publisher pub_agent_arrows_;
     ros::Publisher pub_robot_position_;
 
-    // provided services
-    ros::ServiceServer srv_pause_simulation_;
-    ros::ServiceServer srv_unpause_simulation_;
+		//subscriber
+		ros::Subscriber sub_reset_agents_;
 
-    // agent id <-> activity map
-    std::map<int, std::string> agent_activities_;
+    // Transform listener for retrieving externally provided robot position
+    boost::shared_ptr< tf::TransformListener > transform_listener_;
 
-    // pointers and additional data
-    std::unique_ptr<tf::TransformListener> transform_listener_;
-    std::unique_ptr<OrientationHandler> orientation_handler_;
-    Agent* robot_; // robot agent
-    tf::StampedTransform last_robot_pose_; // pose of robot in previous timestep
-    geometry_msgs::Quaternion last_robot_orientation_;
+    // - Covenient object to handling quaternions
+    OrientationHandlerPtr orientation_handler_;
 
-    inline Eigen::Quaternionf computePose(Agent* a);
-    inline std::string agentStateToActivity(AgentStateMachine::AgentState state);
-    inline std_msgs::ColorRGBA getColor(int agent_id);
+	// agent activity map
+	std::map<int, std::string> agent_activities_;
+
+private:
+
+	/// \brief Compute pose of an agent in quaternion format
+    inline Eigen::Quaternionf computePose( Agent *a )
+	{
+        double theta = atan2(a->getvy(), a->getvx());
+        Eigen::Quaternionf q = orientation_handler_->rpy2Quaternion(M_PI / 2.0, theta + (M_PI / 2.0), 0.0);
+        return q;
+    }
+
+	/// \brief Convert agent state machine state to simulated activity
+    inline std::string agentStateToActivity( AgentStateMachine::AgentState state )
+	{
+        std::string activity = "Unknown";
+
+        switch ( state )
+		{
+        case AgentStateMachine::AgentState::StateWalking:
+            activity = pedsim_msgs::AgentState::TYPE_INDIVIDUAL_MOVING;
+            break;
+        case AgentStateMachine::AgentState::StateGroupWalking:
+            activity = pedsim_msgs::AgentState::TYPE_GROUP_MOVING;
+            break;
+        case AgentStateMachine::AgentState::StateQueueing:
+            activity = pedsim_msgs::AgentState::TYPE_WAITING_IN_QUEUE;
+            break;
+        case AgentStateMachine::AgentState::StateShopping:
+            activity = pedsim_msgs::AgentState::TYPE_SHOPPING;
+            break;
+		case AgentStateMachine::AgentState::StateNone:
+			break;
+		case AgentStateMachine::AgentState::StateWaiting:
+			break;
+		}
+
+        // TODO
+        // - add standing to the state machine
+        // - add waiting at the end of the queue
+        // - add group walking
+
+        return activity;
+    }
+
+    inline std_msgs::ColorRGBA getColor( int agent_id )
+	{
+		std::string act = agent_activities_[agent_id];
+		std_msgs::ColorRGBA color;
+
+		if ( act == "standing" )
+        {
+            color.a = 1.0;
+            color.r = 1.0;
+            color.g = 1.0;
+            color.b = 1.0;
+        }
+		else if ( act == "queueing" )
+        {
+            color.a = 1.0;
+            color.r = 1.0;
+            color.g = 0.0;
+            color.b = 1.0;
+        }
+		else if ( act == "shopping" )
+        {
+            color.a = 1.0;
+            color.r = 0.0;
+            color.g = 0.0;
+            color.b = 1.0;
+        }
+        else
+        {
+            color.a = 1.0;
+            color.r = 0.0;
+            color.g = 0.7;
+            color.b = 1.0;
+        }
+
+		return color;
+	}
 };
-
-#endif

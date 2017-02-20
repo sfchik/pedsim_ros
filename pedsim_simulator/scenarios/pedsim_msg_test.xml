@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <!--Obstacles
+	<obstacle x1="30" y1="15" x2="30" y2="1"/>
+    <obstacle x1="0" y1="0" x2="0" y2="15"/> -->
+
+<!--    <obstacle x1="0" y1="0" x2="29" y2="0"/>-->
+<!--    <obstacle x1="0" y1="8" x2="29" y2="8"/>-->
+<!--    <obstacle x1="0" y1="16" x2="29" y2="16"/> -->
+
+    <!--Waypoints (incl. WaitingQueues)-->
+
+<!--    <waypoint id="left_up" x="2" y="5.5" r="0.5"/>
+    <waypoint id="right_up" x="25" y="5.5" r="0.5"/>
+    <waypoint id="left_down" x="2" y="1" r="0.5"/>
+    <waypoint id="right_down" x="25" y="1" r="0.5"/>
+
+    <waypoint id="left_up2" x="5" y="12" r="3"/>
+    <waypoint id="right_up2" x="25" y="12" r="3"/>
+
+    <waypoint id="left_up3" x="1" y="12" r="3"/>
+    <waypoint id="right_up3" x="30" y="12" r="3"/>
+
+    <waypoint id="left_down2" x="4" y="5" r="3"/>
+    <waypoint id="right_down2" x="20" y="5" r="3"/>
+
+    <waypoint id="left_down3" x="4" y="4" r="3"/>
+    <waypoint id="right_down3" x="20" y="4" r="3"/> -->
+
+
+    <waypoint id="left_down" x="4" y="4" r="3"/>
+    <waypoint id="right_down" x="10" y="4" r="3"/>
+
+    <waypoint id="right_up" x="10" y="10" r="3"/>
+    <waypoint id="left_up" x="4" y="10" r="3"/>
+
+    <waypoint id="right_down_far" x="20" y="4" r="3"/>    
+
+    <!--Attractions-->
+    <!--Agents-->
+<!-- ROBOT -->
+    <agent x="4" y="5.5" n="1" dx="10" dy="6" type="2"> <!-- x="4" y="5" -->
+        <addwaypoint id="right_up"/>
+        <addwaypoint id="left_up"/>
+        <!-- <addwaypoint id="right_up"/> -->
+    </agent>
+
+<!--AgentClusters -->
+	<!--square movement-->
+    <agent x="4" y="4" n="1" dx="0.5" dy="1" type="4">
+        <addwaypoint id="left_down"/>
+        <addwaypoint id="right_down"/>
+        <addwaypoint id="right_up"/>
+        <addwaypoint id="left_up"/>
+    </agent>
+
+    <!--straight line from left-->   
+    <agent x="4" y="4" n="0" dx="0.5" dy="1" type="4">
+        <addwaypoint id="left_down"/>
+        <addwaypoint id="right_down_far"/>
+    </agent>
+
+    <agent x="26" y="5.5" n="0" dx="0.5" dy="1" type="4">
+        <addwaypoint id="right_up"/>
+        <addwaypoint id="left_up"/>
+    </agent>
+    <agent x="2" y="5.5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_up"/>
+        <addwaypoint id="right_up"/>
+    </agent>
+    <agent x="2" y="5.5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_up"/>
+        <addwaypoint id="right_up"/>
+    </agent>
+    <agent x="2" y="5.5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_up"/>
+        <addwaypoint id="right_up"/>
+    </agent>
+	<!-- at top side 2 1 2 1 1 -->
+    <agent x="4" y="5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="right_down2"/>
+        <addwaypoint id="left_down2"/>
+    </agent>
+
+    <agent x="10" y="5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="right_down2"/>
+        <addwaypoint id="left_down2"/>
+    </agent>
+
+    <agent x="15" y="5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_down2"/>
+        <addwaypoint id="right_down2"/>
+    </agent>
+
+    <agent x="15" y="4" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_down3"/>
+        <addwaypoint id="right_down3"/>
+    </agent>
+
+    <agent x="20" y="5" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_down2"/>
+        <addwaypoint id="right_down2"/>
+    </agent>
+
+	<!-- at bottom side 2 1 2 1 -->
+    <agent x="4" y="3" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="right_down"/>
+        <addwaypoint id="left_down"/>
+    </agent>
+
+    <agent x="10" y="3" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="right_down"/>
+        <addwaypoint id="left_down"/>
+    </agent>
+
+    <agent x="15" y="3" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_down"/>
+        <addwaypoint id="right_down"/>
+    </agent>
+
+    <agent x="20" y="3" n="0" dx="1" dy="1" type="0">
+        <addwaypoint id="left_down"/>
+        <addwaypoint id="right_down"/>
+    </agent>
+
+
+    <agent x="25" y="4" n="0" dx="10" dy="6" type="0">
+        <addwaypoint id="right_down"/>
+        <addwaypoint id="right_up"/>
+        <addwaypoint id="left_up"/>
+        <addwaypoint id="left_down"/>
+    </agent>
+    <agent x="25" y="5" n="0" dx="10" dy="6" type="0">
+     <!--     <addwaypoint id="right_down"/>
+      <addwaypoint id="right_down_same"/>
+        <addwaypoint id="right_up"/>
+        <addwaypoint id="left_up"/>-->
+        <addwaypoint id="left_down"/> 
+    </agent>
+
+    <agent x="5" y="4" n="0" dx="10" dy="6" type="1">
+        <addwaypoint id="left_up"/>
+        <addwaypoint id="left_down"/>
+        <addwaypoint id="right_down"/>
+        <addwaypoint id="right_up"/>
+    </agent>
+    <agent x="25" y="5" n="0" dx="10" dy="6" type="1">
+        <addwaypoint id="left_up"/>
+        <addwaypoint id="left_down"/>
+        <addwaypoint id="right_down"/>
+        <addwaypoint id="right_up"/>
+    </agent>
+</scenario>
